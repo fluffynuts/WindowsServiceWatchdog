@@ -19,6 +19,7 @@ namespace WindowsServiceWatchdog
         public int DEFAULT_POLL_INTERVAL = 1;
 
         public const string CONFIG_FILE = "config.ini";
+        public const string LOG_FILE = "watchdog.log";
         private DateTime _configLastLoaded = DateTime.MinValue;
         private DateTime _nextPoll = DateTime.MinValue;
 
@@ -58,19 +59,32 @@ namespace WindowsServiceWatchdog
         private void ConfigureFileAppender()
         {
             var repository = LogManager.GetRepository() as Hierarchy;
+            if (repository == null)
+            {
+                throw new InvalidCastException("Can't get repository from LogManager");
+            }
             var root = repository.Root;
+            if (root.Appenders.ToArray().Any(a => a is RollingFileAppender))
+            {
+                return;
+            }
+
             var appender = new RollingFileAppender()
             {
                 Layout = new PatternLayout("%date %-5level: %message%newline"),
-                File = "watcher.log",
+                File = MyLogFile,
                 Threshold = Level.Info,
+                AppendToFile = true,
                 ImmediateFlush = true,
                 RollingStyle = RollingFileAppender.RollingMode.Size,
-                MaxSizeRollBackups = 5
+                MaxSizeRollBackups = 5,
+                SecurityContext = SecurityContextProvider.DefaultProvider.CreateSecurityContext(this)
             };
             root.AddAppender(appender);
             root.Level = Level.Info;
             repository.RaiseConfigurationChanged(EventArgs.Empty);
+            
+            LogInfo("Should go to file");
         }
 
         [Obsolete("Remove me once Shell is updated")]
@@ -81,6 +95,7 @@ namespace WindowsServiceWatchdog
 
         protected override void RunOnce()
         {
+            ConfigureFileAppender();
             try
             {
                 if (!ShouldCheckServices())
@@ -282,6 +297,7 @@ namespace WindowsServiceWatchdog
         );
 
         private static string MyConfig => Path.Combine(MyFolder, CONFIG_FILE);
+        private static string MyLogFile = Path.Combine(MyFolder, LOG_FILE);
 
         private bool GeneratedFirstTimeConfig()
         {
