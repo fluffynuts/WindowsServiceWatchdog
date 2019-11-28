@@ -114,15 +114,20 @@ namespace WindowsServiceWatchdog
 
         private void LogFatal(string error)
         {
-            _logger.Fatal(error, null);
+            _logger.Fatal(error);
         }
 
         private void LogInfo(string message)
         {
-            _logger.Info(message, null);
+            _logger.Info(message);
         }
 
-        private void LogError(string error, Exception ex = null)
+        private void LogWarn(string message)
+        {
+            _logger.Warn(message);
+        }
+
+        private void LogError(string error, Exception ex)
         {
             _logger.Error(error, ex);
         }
@@ -132,7 +137,6 @@ namespace WindowsServiceWatchdog
             var serviceRunTime = TryFetchServiceRunTime();
             if (serviceRunTime == null)
             {
-                LogError($"Unable to query service process runtime for {Name}");
                 return;
             }
 
@@ -157,8 +161,9 @@ namespace WindowsServiceWatchdog
                 var process = Process.GetProcessById(_util.ServicePID);
                 return (Now - process.StartTime).TotalSeconds;
             }
-            catch
+            catch (Exception ex)
             {
+                LogError($"Unable to query service process runtime for {Name}", ex);
                 return null;
             }
         }
@@ -187,7 +192,7 @@ namespace WindowsServiceWatchdog
                 return false;
             }
 
-            LogInfo($"Attempting to start: {Name}");
+            LogWarn($"Attempting to start: {Name}");
             _util.Start(false);
             LogInfo($"Start signal sent for: {Name}");
             ResetNextRestart();

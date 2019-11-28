@@ -10,8 +10,8 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using PeanutButter.ServiceShell;
 
-[assembly: AssemblyVersion("1.0.1")]
-[assembly: AssemblyFileVersion("1.0.1")]
+[assembly: AssemblyVersion("1.0.2")]
+[assembly: AssemblyFileVersion("1.0.2")]
 namespace WindowsServiceWatchdog
 {
     public class Program
