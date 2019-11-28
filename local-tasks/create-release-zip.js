@@ -10,9 +10,14 @@ const
     zipFolder = require("zip-folder");
 
 function findVersionIn(propertyGroup) {
-    if (propertyGroup.Version && propertyGroup.Version.length) {
-        return (propertyGroup.Version[0] || "").trim();
-    }
+    return ["Version", "AssemblyVersion", "FileVersion"].reduce(
+        (acc, cur) => {
+            if (propertyGroup[cur] && propertyGroup[cur].length) {
+                var result = (propertyGroup[cur][0] || "").trim();
+                return result === "" ? undefined : result;
+            }
+            return acc;
+        }, undefined);
 }
 
 gulp.task("create-release-zip", async () => {
