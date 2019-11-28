@@ -17,4 +17,5 @@
     <PackageReference Include="PeanutButter.ServiceShell" Version="1.2.322" />
     <PackageReference Include="PeanutButter.WindowsServiceManagement" Version="1.2.322" />
   </ItemGroup>
+  <Import Condition="'$(OS)' != 'Windows_NT'" Project="netfx.props" />
 </Project>
