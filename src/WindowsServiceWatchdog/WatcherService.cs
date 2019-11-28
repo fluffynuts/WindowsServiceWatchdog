@@ -266,6 +266,7 @@ namespace WindowsServiceWatchdog
                 return false;
             }
 
+            LogInfo($"Config changed; reloading.");
             LoadConfig();
             return true;
         }

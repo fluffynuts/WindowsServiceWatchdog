@@ -344,3 +344,5 @@ healthchecksdb
 MigrationBackup/
 .idea
 *.swp
+tools
+releases
