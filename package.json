@@ -6,8 +6,8 @@
     "scripts": {
         "prerelease": "cross-env BUILD_CONFIGURATION=Release run-s \"gulp build\"",
         "release": "run-s \"gulp create-release-zip\"",
-        "gulp": "cross-env DOTNET_CORE=1 BUILD_TOOLS_FOLDER=tools gulp",
-        "build": "run-s \"gulp build\""
+        "build": "run-s \"gulp build\"",
+        "gulp": "cross-env DOTNET_CORE=1 BUILD_TOOLS_FOLDER=tools BUILD_EXCLUDE=src/PeanutButter/** gulp"
     },
     "author": "",
     "license": "BSD-2-Clause",
