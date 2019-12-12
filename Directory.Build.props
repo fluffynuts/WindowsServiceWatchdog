@@ -1,0 +1,6 @@
+<Project>
+    <PropertyGroup>
+        <UseSharedCompilation>true</UseSharedCompilation>
+        <Configurations>Debug;Release;DebugPeanutButter</Configurations>
+    </PropertyGroup>
+</Project>

@@ -13,10 +13,11 @@ namespace WindowsServiceWatchdog
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ILog _logger;
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public string Name { get; }
         private readonly int[] _backoff;
         private readonly int _resetTime;
-        private WindowsServiceUtil _util;
+        private readonly WindowsServiceUtil _util;
         private Queue<int> _backoffQueue;
         private DateTime? _restartAt;
 
@@ -40,18 +41,23 @@ namespace WindowsServiceWatchdog
         {
             if (!config.BackoffSeconds.Any())
             {
-                var error = "Backoff config contains no items";
-                LogFatal(error);
-                throw new ArgumentException(error, nameof(config));
+                LogFatal(BackoffConfigError);
+                throw new ArgumentException(BackoffConfigError, nameof(config));
             }
 
-            if (config.ResetAfterSeconds < 1)
+            if (config.ResetAfterSeconds >= 1)
             {
-                var error = "Reset seconds cannot be < 1";
-                LogFatal(error);
-                throw new ArgumentException(error, nameof(config));
+                return;
+            }
+
+            {
+                LogFatal(ResetSecondsError);
+                throw new ArgumentException(ResetSecondsError, nameof(config));
             }
         }
+        
+        private const string ResetSecondsError = "Reset seconds cannot be < 1";
+        private const string BackoffConfigError = "Backoff config contains no items";
 
         private DateTime Now => _dateTimeProvider.Now;
 
@@ -158,8 +164,10 @@ namespace WindowsServiceWatchdog
         {
             try
             {
-                var process = Process.GetProcessById(_util.ServicePID);
-                return (Now - process.StartTime).TotalSeconds;
+                using (var process = Process.GetProcessById(_util.ServicePID))
+                {
+                    return (Now - process.StartTime).TotalSeconds;
+                }
             }
             catch (Exception ex)
             {

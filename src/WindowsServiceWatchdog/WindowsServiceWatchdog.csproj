@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <TargetFramework>net462</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -12,10 +13,20 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
-    <PackageReference Include="log4net" Version="2.0.3" />
-    <PackageReference Include="PeanutButter.INI" Version="1.2.322" />
-    <PackageReference Include="PeanutButter.ServiceShell" Version="1.2.322" />
-    <PackageReference Include="PeanutButter.WindowsServiceManagement" Version="1.2.322" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Condition="'$(Configuration)' != 'DebugPeanutButter'" Include="PeanutButter.INI" Version="1.2.328" />
+    <PackageReference Condition="'$(Configuration)' != 'DebugPeanutButter'" Include="PeanutButter.ServiceShell" Version="1.2.328" />
+    <PackageReference Condition="'$(Configuration)' != 'DebugPeanutButter'" Include="PeanutButter.WindowsServiceManagement" Version="1.2.328" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="config.ini">
+      <CopyToOutputDirectory Condition="'$(Configuration)' == 'Debug'">Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Condition="'$(Configuration)' == 'DebugPeanutButter'" Include="..\PeanutButter\source\INI\PeanutButter.INI\PeanutButter.INI.csproj" />
+    <ProjectReference Condition="'$(Configuration)' == 'DebugPeanutButter'" Include="..\PeanutButter\source\Win32Service\PeanutButter.ServiceShell\PeanutButter.ServiceShell.csproj" />
+    <ProjectReference Condition="'$(Configuration)' == 'DebugPeanutButter'" Include="..\PeanutButter\source\Win32Service\PeanutButter.WindowsServiceManagement\PeanutButter.WindowsServiceManagement.csproj" />
   </ItemGroup>
   <Import Condition="'$(OS)' != 'Windows_NT'" Project="netfx.props" />
 </Project>

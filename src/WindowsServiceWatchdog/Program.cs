@@ -10,8 +10,8 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using PeanutButter.ServiceShell;
 
-[assembly: AssemblyVersion("1.0.2")]
-[assembly: AssemblyFileVersion("1.0.2")]
+[assembly: AssemblyVersion("1.0.3")]
+[assembly: AssemblyFileVersion("1.0.3")]
 namespace WindowsServiceWatchdog
 {
     public class Program
@@ -49,6 +49,12 @@ namespace WindowsServiceWatchdog
         private static void ConfigureConsoleAppender()
         {
             var repository = LogManager.GetRepository() as Hierarchy;
+            if (repository is null)
+            {
+                Console.WriteLine("Unable to configure console appender");
+                return;
+            }
+
             var root = repository.Root;
             var consoleAppender = new ConsoleAppender()
             {

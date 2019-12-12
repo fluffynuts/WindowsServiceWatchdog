@@ -9,17 +9,19 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using PeanutButter.INIFile;
 using PeanutButter.ServiceShell;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace WindowsServiceWatchdog
 {
     public class WatcherService : Shell
     {
-        public int DEFAULT_RESET_SECONDS = 30;
-        public string DEFAULT_BACKOFF = "5, 10, 15, 30";
-        public int DEFAULT_POLL_INTERVAL = 1;
+        public const int DEFAULT_RESET_SECONDS = 30;
+        public const string DEFAULT_BACKOFF = "5, 10, 15, 30";
+        public const int DEFAULT_POLL_INTERVAL = 1;
 
         public const string CONFIG_FILE = "config.ini";
         public const string LOG_FILE = "watchdog.log";
+        
         private DateTime _configLastLoaded = DateTime.MinValue;
         private DateTime _nextPoll = DateTime.MinValue;
 
@@ -85,12 +87,6 @@ namespace WindowsServiceWatchdog
             repository.RaiseConfigurationChanged(EventArgs.Empty);
             
             LogInfo("Should go to file");
-        }
-
-        [Obsolete("Remove me once Shell is updated")]
-        public void RunOnceExposed()
-        {
-            RunOnce();
         }
 
         protected override void RunOnce()
@@ -281,7 +277,7 @@ namespace WindowsServiceWatchdog
                 return false;
             }
 
-            LogInfo($"Config changed; reloading.");
+            LogInfo("Config changed; reloading.");
             LoadConfig();
             return true;
         }
@@ -292,12 +288,11 @@ namespace WindowsServiceWatchdog
             _configLastLoaded = Now;
         }
 
-        private static string MyFolder => Path.GetDirectoryName(
+        private static readonly string MyFolder = Path.GetDirectoryName(
             new Uri(Assembly.GetExecutingAssembly().Location).LocalPath
         );
-
-        private static string MyConfig => Path.Combine(MyFolder, CONFIG_FILE);
-        private static string MyLogFile = Path.Combine(MyFolder, LOG_FILE);
+        private static readonly string MyConfig = Path.Combine(MyFolder, CONFIG_FILE);
+        private static readonly string MyLogFile = Path.Combine(MyFolder, LOG_FILE);
 
         private bool GeneratedFirstTimeConfig()
         {
